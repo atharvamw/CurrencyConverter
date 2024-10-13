@@ -1,0 +1,3 @@
+javac CurrencyConverter.java
+java CurrencyConverter
+PAUSE
