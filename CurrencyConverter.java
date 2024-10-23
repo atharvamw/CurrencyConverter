@@ -136,7 +136,9 @@ class Screen extends JPanel
 	Choice to = new Choice();
 	Choice from = new Choice();
 	JLabel Lfrom = new JLabel("From");
+	JLabel Lamt = new JLabel("Amount");
 	JLabel Lto = new JLabel("To");
+	JLabel Lcon = new JLabel("Converted");
 	JToggleButton Fcrypto = new JToggleButton("International");
 	JToggleButton Tcrypto = new JToggleButton("International");
 	
@@ -145,7 +147,7 @@ class Screen extends JPanel
 	
 	JSlider decimalDigits = new JSlider(0,5,4);
 	
-	final Color darkGreen = new Color(28, 99, 47);
+	final Color darkGreen = new Color(50, 120, 70);
 	final Color dark = new Color(48, 48, 48); 
 	final Color lime = new Color(180, 230, 100); 
 	final Font large = new Font("Garamond",Font.BOLD, 48);
@@ -208,12 +210,13 @@ class Screen extends JPanel
 
 		setLayout(null);
 		
-		giveForeground(new Component[]{exchange,date,Lfrom,Lto}, darkGreen);
+		giveForeground(new Component[]{exchange,date,Lfrom,Lto,Lamt,Lcon}, darkGreen);
 		giveForeground(new Component[]{heading,from,to,Tfrom,Tto,decimalDigits,Fcrypto,Tcrypto}, lime);
 		giveBackground(new Component[]{from,to,Tfrom,Tto,decimalDigits,home}, dark);
 		giveBackground(new Component[]{heading,Fcrypto,Tcrypto}, darkGreen);
 		
 		Lfrom.setFont(verysmall); Lto.setFont(verysmall);
+		Lamt.setFont(verysmall); Lcon.setFont(verysmall);
 		Tfrom.setFont(verysmall); Tto.setFont(verysmall);
 		from.setFont(verysmall); to.setFont(verysmall);
 		from.setFocusable(false); to.setFocusable(false);
@@ -251,12 +254,14 @@ class Screen extends JPanel
 				Lfrom.setBounds((getWidth()/2)-400,300,200,30);
 				from.setBounds((getWidth()/2)-400,340,200,30);
 				Fcrypto.setBounds((getWidth()/2)-520,342,110,30);
-				Tfrom.setBounds((getWidth()/2)-400,390,200,30);
+				Lamt.setBounds((getWidth()/2)-400,395,200,30);
+				Tfrom.setBounds((getWidth()/2)-400,430,200,30);
 				Lto.setBounds((getWidth()/2) + 150,300,200,30);
 				to.setBounds((getWidth()/2) + 150,340,200,30);
 				Tcrypto.setBounds((getWidth()/2)+359,342,110,30);
-				Tto.setBounds((getWidth()/2) + 150,390,200,30);
-				decimalDigits.setBounds((getWidth()/2) + 150,430,200,50);
+				Lcon.setBounds((getWidth()/2) + 150,395,200,30);
+				Tto.setBounds((getWidth()/2) + 150,430,200,30);
+				decimalDigits.setBounds((getWidth()/2) + 150,470,200,50);
 				home.setBounds(15,100,24,50);
 			}
 		});
@@ -271,6 +276,8 @@ class Screen extends JPanel
 		add(home);
 		add(Fcrypto);
 		add(Tcrypto);
+		add(Lamt);
+		add(Lcon);
 		
 		Tfrom.addKeyListener(new AllowOnlyDigits());
 		Tto.addKeyListener(new AllowOnlyDigits());
@@ -481,4 +488,5 @@ class AllowOnlyDigits extends KeyAdapter
 		}
 	}
 }
+
 
