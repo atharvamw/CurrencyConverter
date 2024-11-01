@@ -6,6 +6,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 import java.text.*;
+import java.util.stream.Collectors;
 
 class CurrencyConverter extends JFrame
 {	
@@ -25,6 +26,9 @@ class CurrencyConverter extends JFrame
 		Screen international = new Screen(internationalURL, "International Currency Exchange");
 		international.setBackground(new Color(48, 48, 48));
 		
+		StockMarket stockmarket = new StockMarket("Stock Market Exchange");
+		stockmarket.setBackground(new Color(48, 48, 48));
+		
 		
 		homepage.ice.addActionListener(new ActionListener(){
 			
@@ -32,6 +36,17 @@ class CurrencyConverter extends JFrame
 			{
 				remove(homepage);
 				add(international);
+				validate();
+				repaint();
+			}
+		});
+		
+		homepage.sme.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent ae)
+			{
+				remove(homepage);
+				add(stockmarket);
 				validate();
 				repaint();
 			}
@@ -47,10 +62,22 @@ class CurrencyConverter extends JFrame
 				repaint();
 			}
 		});
+		
+		stockmarket.home.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				remove(stockmarket);
+				add(homepage);
+				validate();
+				repaint();
+			}
+		});
 
 		
 		add(homepage,BorderLayout.CENTER);
 		setVisible(true);
+		
 	}
 
 	public static void main(String[] args)
@@ -76,7 +103,7 @@ class Homepage extends JPanel
 		sme.setBounds(40,550,400,30);
 		homeTitle.setBounds(80,50,300,300);
 		homeImage.setBounds(500,50,500,500);
-		mainBtnFormat(new JButton[]{ice,sme},true);
+		mainBtnFormat(new AbstractButton[]{ice,sme},true);
 		
 		
 		add(ice);
@@ -86,9 +113,9 @@ class Homepage extends JPanel
 		
 	}
 	
-	public static void mainBtnFormat(JButton[] cmpArray, boolean extra)
+	public static void mainBtnFormat(AbstractButton[] cmpArray, boolean extra)
 	{
-		for(JButton cmp : cmpArray)
+		for(AbstractButton cmp : cmpArray)
 		{
 			cmp.setFocusPainted(false);
 			cmp.setBorderPainted(false);
@@ -128,7 +155,7 @@ class Screen extends JPanel
 {
 	JLabel heading;
 	JLabel exchange = new JLabel("1 USD = 83 INR",JLabel.CENTER);
-	JLabel date = new JLabel("1st October 2024",JLabel.RIGHT);
+	static JLabel date = new JLabel("",JLabel.RIGHT);
 	JLabel exIcon = new JLabel(new ImageIcon("exchange.png"));
 	
 	JButton home = new JButton(new ImageIcon("home.png"));
@@ -147,13 +174,14 @@ class Screen extends JPanel
 	
 	JSlider decimalDigits = new JSlider(0,5,4);
 	
-	final Color darkGreen = new Color(50, 120, 70);
-	final Color dark = new Color(48, 48, 48); 
-	final Color lime = new Color(180, 230, 100); 
-	final Font large = new Font("Garamond",Font.BOLD, 48);
-	final Font medium = new Font("Garamond",Font.BOLD, 38);
-	final Font small = new Font("Garamond",Font.BOLD, 28);
-	final Font verysmall = new Font("Garamond",Font.BOLD, 24);
+	final static Color darkGreen = new Color(50, 120, 70);
+	final static Color dark = new Color(48, 48, 48); 
+	final static Color lime = new Color(180, 230, 100); 
+	final static Font large = new Font("Garamond",Font.BOLD, 48);
+	final static Font medium = new Font("Garamond",Font.BOLD, 38);
+	final static Font small = new Font("Garamond",Font.BOLD, 28);
+	final static Font verysmall = new Font("Garamond",Font.BOLD, 24);
+	final static Font tiny = new Font("Garamond",Font.BOLD, 14);
 	
 	String apiURL;
 	URL url;
@@ -189,7 +217,6 @@ class Screen extends JPanel
 		for(String code : currencyCodes)
 		{
 			from.add(code);
-			if(!code.equals("USD"))
 			to.add(code);
 		}
 		
@@ -199,14 +226,7 @@ class Screen extends JPanel
 		String today = new Date().toString();
 		date.setText(today.substring(0,10) + " " + today.substring(24));
 
-		Homepage.mainBtnFormat(new JButton[]{home},false);
-		Fcrypto.setFocusPainted(false);
-		Fcrypto.setContentAreaFilled(false);
-        Fcrypto.setOpaque(true);
-		
-		Tcrypto.setFocusPainted(false);
-		Tcrypto.setContentAreaFilled(false);
-        Tcrypto.setOpaque(true);
+		Homepage.mainBtnFormat(new AbstractButton[]{home,Fcrypto, Tcrypto},false);
 
 		setLayout(null);
 		
@@ -245,6 +265,8 @@ class Screen extends JPanel
 					heading.setFont(large);
 					exchange.setFont(medium);
 					date.setFont(small);
+					Tcrypto.setFont(tiny);
+					Fcrypto.setFont(tiny);
 				}
 				
 				heading.setBounds(0,20,getWidth(),70);
@@ -253,12 +275,12 @@ class Screen extends JPanel
 				exIcon.setBounds(getWidth()/2-110,280,200,200);
 				Lfrom.setBounds((getWidth()/2)-400,300,200,30);
 				from.setBounds((getWidth()/2)-400,340,200,30);
-				Fcrypto.setBounds((getWidth()/2)-520,342,110,30);
+				Fcrypto.setBounds((getWidth()/2)-530,342,120,30);
 				Lamt.setBounds((getWidth()/2)-400,395,200,30);
 				Tfrom.setBounds((getWidth()/2)-400,430,200,30);
 				Lto.setBounds((getWidth()/2) + 150,300,200,30);
 				to.setBounds((getWidth()/2) + 150,340,200,30);
-				Tcrypto.setBounds((getWidth()/2)+359,342,110,30);
+				Tcrypto.setBounds((getWidth()/2)+359,342,120,30);
 				Lcon.setBounds((getWidth()/2) + 150,395,200,30);
 				Tto.setBounds((getWidth()/2) + 150,430,200,30);
 				decimalDigits.setBounds((getWidth()/2) + 150,470,200,50);
@@ -418,7 +440,6 @@ class Screen extends JPanel
 	{
 		int index = data.indexOf(ie.getItem().toString().toLowerCase());
 		rate = Double.parseDouble(data.toString().substring(index+6,index+14));
-		System.out.println(rate);
 		Tto.setText("");
 		Tfrom.setText("");
 		exchange.setText("1 " + from.getSelectedItem() + " = " + rate + " " + to.getSelectedItem());
@@ -434,8 +455,7 @@ class Screen extends JPanel
 			to.insert(usedCurrency,usedIndex);   
 			usedCurrency = from.getSelectedItem();
 			usedIndex = from.getSelectedIndex();
-			to.remove(usedCurrency);
-			
+			to.remove(usedCurrency);	
 		}
 			
 		to.select(currentSelection);
@@ -459,7 +479,7 @@ class Screen extends JPanel
 		
 	}
 	
-	public void giveForeground(Component[] arr, Color c)
+	public static void giveForeground(Component[] arr, Color c)
 	{
 		for(Component element : arr)
 		{
@@ -467,7 +487,7 @@ class Screen extends JPanel
 		}
 	}
 	
-	public void giveBackground(Component[] arr, Color c)
+	public static void giveBackground(Component[] arr, Color c)
 	{
 		for(Component element : arr)
 		{
@@ -486,6 +506,310 @@ class AllowOnlyDigits extends KeyAdapter
 		{
 			ke.consume();
 		}
+	}
+}
+
+
+class StockMarket extends JPanel
+{	
+	final String[] stockIndices = {"NIFTY 50", "NIFTY NEXT 50", "NIFTY 100", "NIFTY MIDCAP 100", "NIFTY MIDCAP 150", "NIFTY 200", "NIFTY 500", "NIFTY IT", "NIFTY BANK" };
+	Choice stockOptions = new Choice();
+	JLabel date = new JLabel(Screen.date.getText(),JLabel.RIGHT);
+	JLabel heading;
+	
+	JButton home = new JButton(new ImageIcon("home.png"));
+	
+	JLabel Lindices = new JLabel("Select a Index",JLabel.CENTER);
+	JLabel Lcurrent = new JLabel("Current");
+	JLabel currentChange = new JLabel("");
+	JTextField current = new JTextField();
+	ImageIcon up = new ImageIcon("up.png");
+	ImageIcon down = new ImageIcon("down.png");
+	JLabel currentIcon = new JLabel("",JLabel.RIGHT);
+	JLabel graphPanel = new JLabel();
+	
+	String Chartjson = "";
+	
+	
+	HashMap<String, String> stockMap = new HashMap<>();
+	
+	public String quote(String str)
+	{
+			return "\"" + str + "\"";
+	}
+	
+	StockMarket(String title)
+	{
+		setLayout(null);
+		
+		heading = new JLabel(title,JLabel.CENTER);
+		heading.setFont(Screen.large);
+		heading.setOpaque(true);
+		heading.setBounds(0,20,1000,50);
+		
+		Homepage.mainBtnFormat(new AbstractButton[]{home},false);
+		
+		current.setEditable(false);
+		
+		stockOptions.setFocusable(false); home.setFocusable(false);
+		Screen.giveForeground(new Component[]{date,Lindices,Lcurrent,currentChange}, Screen.darkGreen);
+		Screen.giveBackground(new Component[]{heading}, Screen.darkGreen);
+		Screen.giveForeground(new Component[]{heading,stockOptions, current}, Screen.lime);
+		Screen.giveBackground(new Component[]{stockOptions,current,home}, Screen.dark);
+		
+		stockMap.put("NIFTY 50", ".NSEI");
+		stockMap.put("NIFTY NEXT 50", ".NN50");
+		stockMap.put("NIFTY 100", ".NIFTY100");
+		stockMap.put("NIFTY MIDCAP 100", ".NIFMDCP100");
+		stockMap.put("NIFTY MIDCAP 150", ".NIMI150");
+		stockMap.put("NIFTY 200", ".NIFTY200");
+		stockMap.put("NIFTY 500", ".NIFTY500");
+		stockMap.put("NIFTY IT", ".NIFTYIT");
+		stockMap.put("NIFTY BANK", ".NSEBANK");
+		
+		addComponentListener(new ComponentAdapter(){
+			
+			public void componentResized(ComponentEvent ce)
+			{	
+				if(getWidth()<750)
+				{
+					heading.setFont(Screen.medium);
+					Lindices.setFont(Screen.verysmall);
+					stockOptions.setFont(Screen.verysmall);
+					Lcurrent.setFont(Screen.verysmall);
+					current.setFont(Screen.verysmall);
+					date.setFont(Screen.verysmall);
+					currentChange.setFont(Screen.verysmall);
+				}
+				else if(getWidth()>=750)
+				{
+					heading.setFont(Screen.large);
+					Lindices.setFont(Screen.medium);
+					Lcurrent.setFont(Screen.verysmall);
+					current.setFont(Screen.verysmall);
+					stockOptions.setFont(Screen.medium);
+					date.setFont(Screen.small);
+					currentChange.setFont(Screen.verysmall);
+				}
+				
+				heading.setBounds(0,15,getWidth(),70);
+				date.setBounds(0,80,getWidth()-15,50);
+				Lindices.setBounds(0,100,getWidth(),50);
+				stockOptions.setBounds(getWidth()/4,150,getWidth()/2,50);
+				graphPanel.setBounds(getWidth()/4,220,(int) (getWidth()/1.3) ,300);
+				Lcurrent.setBounds(getWidth()/4,540,getWidth()/4,30);
+				current.setBounds((int)(getWidth()/2.15),540,getWidth()/4,30);
+				currentIcon.setBounds((int)(getWidth()/1.385),540,24,24);
+				currentChange.setBounds((int)(getWidth()/2.15),570,getWidth()/4,30);
+				home.setBounds(15,80,24,50);
+				
+			}
+		});
+		
+		stockOptions.addItemListener(new ItemListener(){
+			
+			public void itemStateChanged(ItemEvent ie)
+			{
+				updateStockDashboard();
+			}
+		});
+		
+		for(String option : stockIndices)
+		{
+			stockOptions.add(option);
+		}
+		
+		add(heading);
+		add(date);
+		add(Lindices);
+		add(stockOptions);
+		add(Lcurrent);
+		add(current);
+		add(currentIcon);
+		add(currentChange);
+		add(home);
+		add(graphPanel);
+		
+		updateStockDashboard();	
+	}
+	
+	public void updateStockDashboard()
+	{
+		String Chartjson = fetchJSON("https://api.tickertape.in/stocks/charts/inter/<<?>>?duration=1mo", stockOptions.getSelectedItem());
+		String Stockjson = fetchJSON("https://quotes-api.tickertape.in/quotes?sids=<<?>>", stockOptions.getSelectedItem());
+
+		StockValues indexValues = fetchStockValues(Stockjson, stockOptions.getSelectedItem());
+		
+		current.setText(indexValues.lastPrice + "");
+		currentChange.setText(indexValues.change + " ( " + indexValues.pChange + "% )");
+		
+		Chartjson = fetch(Chartjson, quote("points"));
+		
+		ArrayList<String> chartData = new ArrayList<>( Arrays.asList( Chartjson.split(quote("v"))) );
+		chartData.remove(chartData.size()-1);
+		
+		StringBuilder graphLabels = new StringBuilder();
+		StringBuilder graphData = new StringBuilder();
+		
+		for(String item : chartData)
+		{
+			graphLabels.append("%27" + fetch(item,quote("ts"),10) + "%27,");
+			graphData.append(fetch(item,quote("lp")) + ",");
+		}
+		
+		String graphURL = "https://quickchart.io/chart?c={type:%27line%27,data:{labels:[<<labs?>>],%20datasets:[{label:%27<<name?>>%27,data:[<<data?>>]}]}}&backgroundColor=white&width=500&height=300&devicePixelRatio=1.2&format=png&version=2.9.3";
+		
+		graphURL = graphURL.replace("<<name?>>",stockOptions.getSelectedItem().replace(" ", "%20"));
+		graphURL = graphURL.replace("<<labs?>>",graphLabels.toString());
+		graphURL = graphURL.replace("<<data?>>",graphData.toString());
+		
+		try{
+			
+			URL url = new URL(graphURL);
+			ImageIcon imageIcon = new ImageIcon(url);
+			graphPanel.setIcon(imageIcon);
+			
+		}catch(Exception e){}
+
+				
+		if(indexValues.change < 0.0)
+		{
+			currentIcon.setIcon(down);
+			currentChange.setForeground(Color.red);
+		}
+		else
+		{
+			currentIcon.setIcon(up);
+			currentChange.setForeground(Color.green);
+		}
+		
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		g.setColor(Screen.dark);
+		g.fillRect(0,0,getWidth(),getHeight());
+	}
+	
+	public String fetchJSON(String url , String stockSymbol)
+	{	
+		StringBuilder data = new StringBuilder();
+		String line;
+		
+		try
+		{
+			URL apiURL = new URL(url.replace("<<?>>", stockMap.get(stockSymbol)));
+			
+			HttpURLConnection con = (HttpURLConnection) apiURL.openConnection();
+
+			con.setRequestMethod("GET");
+            con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
+            con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+			
+			BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		
+			while((line = bf.readLine())!=null)
+			{
+				data.append(line + "\n");
+			}
+			bf.close();
+
+			return data.toString();
+			
+		}catch(Exception e){System.out.println("Exception in fetchData(): " + e);}
+		
+		return null;
+	}
+	
+	public String fetch(String jsonString, String key, int... limit)
+	{
+		int index = jsonString.indexOf(key) + key.length() + 1;
+		String s;
+		s = jsonString.substring(index);
+
+		if(jsonString.charAt(index) == '"')
+		{
+			if(limit.length<1)
+				return jsonString.substring(index+1, index+1 + s.substring(1).indexOf('"')).trim();
+			else
+				return jsonString.substring(index+1, index+1 + limit[0]);
+		}
+		
+		else if(jsonString.charAt(index) == '{')
+		{
+			StringBuilder res = new StringBuilder();
+			int noOfBrackets = 1;
+			int i = 1;
+			while(noOfBrackets>0)
+			{
+					char c = jsonString.charAt(index+i);
+					
+					if(c == '{')
+						noOfBrackets++;
+					else if(c == '}')
+					{
+						if(--noOfBrackets <= 0)
+							break;
+					}
+					
+					res.append(c);
+					i++;
+					
+			}
+			return res.toString().trim();
+			
+		}
+		
+		else if(jsonString.charAt(index) == '[')
+		{
+			StringBuilder res = new StringBuilder();
+			int noOfBrackets = 1;
+			int i = 1;
+			while(noOfBrackets>0)
+			{
+					char c = jsonString.charAt(index+i);
+					
+					if(c == '[')
+					{
+						noOfBrackets++;
+					}
+						
+					else if(c == ']')
+					{
+						if(--noOfBrackets <= 0)
+							break;
+					}
+					
+					res.append(c);
+					i++;
+						
+			}
+			return res.toString().trim();
+		}
+		return jsonString.substring(index, index + s.indexOf(',')).trim();
+	}
+	
+	public StockValues fetchStockValues(String json, String stockName)
+	{	
+		StockValues vals = new StockValues(fetch(json, quote("o")), fetch(json, quote("h")), fetch(json, quote("l")), fetch(json, quote("price")), fetch(json, quote("change")), fetch(json, quote("dyChange")));
+		return vals;
+	}
+}
+
+class StockValues 
+{
+	double open, dayHigh, dayLow, lastPrice,change, pChange;
+	
+	StockValues(String o, String dH, String dL, String lP,String ch, String pCh)
+	{
+		DecimalFormat df = new DecimalFormat("#.####");
+		open = Double.parseDouble(df.format(Double.parseDouble(o)));
+		dayHigh = Double.parseDouble(df.format(Double.parseDouble(dH)));
+		dayLow = Double.parseDouble(df.format(Double.parseDouble(dL)));
+		lastPrice = Double.parseDouble(df.format(Double.parseDouble(lP)));
+		change = Double.parseDouble(df.format(Double.parseDouble(ch)));
+		pChange = Double.parseDouble(df.format(Double.parseDouble(pCh)));
+		
 	}
 }
 
