@@ -650,18 +650,25 @@ class StockMarket extends JPanel
 		
 		StringBuilder graphLabels = new StringBuilder();
 		StringBuilder graphData = new StringBuilder();
+		double minvalue = Integer.MAX_VALUE;
 		
 		for(String item : chartData)
 		{
 			graphLabels.append("%27" + fetch(item,quote("ts"),10) + "%27,");
 			graphData.append(fetch(item,quote("lp")) + ",");
+			
+			double value = Double.parseDouble(fetch(item,quote("lp")));
+			
+			if(value < minvalue)
+				minvalue=value;
 		}
 		
-		String graphURL = "https://quickchart.io/chart?c={type:%27line%27,data:{labels:[<<labs?>>],%20datasets:[{label:%27<<name?>>%27,data:[<<data?>>]}]}}&backgroundColor=white&width=500&height=300&devicePixelRatio=1.2&format=png&version=2.9.3";
+		String graphURL = "https://quickchart.io/chart?c={type:%27line%27,data:{labels:[<<labs?>>],%20datasets:[{label:%27<<name?>>%27,data:[<<data?>>]}]},options:{scales:{yAxes:[{ticks:{beginAtZero:true,min:<<minvalue?>>}}]}}}&backgroundColor=white&width=500&height=300&devicePixelRatio=1.2&format=png&version=2.9.3";
 		
 		graphURL = graphURL.replace("<<name?>>",stockOptions.getSelectedItem().replace(" ", "%20"));
 		graphURL = graphURL.replace("<<labs?>>",graphLabels.toString());
 		graphURL = graphURL.replace("<<data?>>",graphData.toString());
+		graphURL = graphURL.replace("<<minvalue?>>",Double.toString(minvalue * 0.96) );
 		
 		try{
 			
